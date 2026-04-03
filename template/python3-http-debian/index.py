@@ -68,14 +68,30 @@ def format_response(res):
 
 @app.route('/', defaults={'path': ''}, methods=['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])
 @app.route('/<path:path>', methods=['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])
+from flask import request
+
 def call_handler(path):
     event = Event()
     context = Context()
 
-    response_data = handler.handle(event, context)
-    
-    res = format_response(response_data)
-    return res
+    raw_body = event.body
+
+    # Try parsing JSON
+    body = request.get_json(silent=True)
+
+    # Fallback if not JSON
+    if body is None:
+        body = raw_body
+
+    # Dynamic handling
+    if isinstance(body, dict):
+        response_data = handler.handle(**body)
+    elif isinstance(body, list):
+        response_data = handler.handle(*body)
+    else:
+        response_data = handler.handle(body)
+
+    return format_response(response_data)
 
 if __name__ == '__main__':
     serve(app, host='0.0.0.0', port=5000)

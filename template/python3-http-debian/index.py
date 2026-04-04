@@ -2,10 +2,12 @@
 from flask import Flask, request, jsonify
 from waitress import serve
 import os
-# Add function directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(_file_), 'function'))
+import sys
 
-from function import handler
+# Add function directory to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'function'))
+
+import handler
 
 app = Flask(__name__)
 

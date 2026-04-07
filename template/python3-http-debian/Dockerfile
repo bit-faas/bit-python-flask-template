@@ -46,6 +46,10 @@ FROM build AS test
 
 ARG TEST_COMMAND=tox
 ARG TEST_ENABLED=true
+
+# Allow Python to find the dependency at function folder
+ENV PYTHONPATH="/home/app/function:${PYTHONPATH}"
+
 RUN [ "$TEST_ENABLED" = "false" ] && echo "skipping tests" || eval "$TEST_COMMAND"
 
 
